@@ -25,6 +25,8 @@ export default class Main extends Component {
   };
 
   async componentDidMount() {
+    console.tron.log(this.props);
+
     const users = await AsyncStorage.getItem('users');
 
     if (users) {
@@ -65,6 +67,12 @@ export default class Main extends Component {
     Keyboard.dismiss();
   };
 
+  handleNavigate = (user) => {
+    const {navigation} = this.props;
+
+    navigation.navigate('User');
+  };
+
   render() {
     const {users, newUser, loading} = this.state;
 
@@ -97,7 +105,7 @@ export default class Main extends Component {
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
 
-              <ProfileButton onPress={() => {}}>
+              <ProfileButton onPress={() => this.handleNavigate(item)}>
                 <ProfileButtonText>Ver perfil</ProfileButtonText>
               </ProfileButton>
             </User>
