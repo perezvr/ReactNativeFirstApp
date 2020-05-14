@@ -23,6 +23,9 @@ export default class Main extends Component {
     title: 'Usuários',
   };
 
+  /* O navigation possui diversas outras propriedades
+   * mas testamos somenteas que vamos usar
+   */
   static propTypes = {
     navigation: PropTypes.shape({
       navigate: PropTypes.func,
@@ -80,7 +83,7 @@ export default class Main extends Component {
 
   handleNavigate = (user) => {
     const {navigation} = this.props;
-
+    /* Chamada para tela 'User' passando um objeto 'user como parâmetro' */
     navigation.navigate('User', {user});
   };
 
