@@ -36,6 +36,6 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-console': 'off',
     'react/state-in-constructor': 'off',
-
+    'react/static-property-placement': 'off',
   },
 };
