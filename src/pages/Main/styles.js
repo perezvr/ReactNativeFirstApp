@@ -50,6 +50,12 @@ export const User = styled.View`
   margin: 0 20px 30px;
 `;
 
+export const UserButtons = styled.View`
+  /* Alinha os itens ao centro, não o texto dos itens */
+  flex-direction: row;
+  padding: 0;
+`;
+
 export const Avatar = styled.Image`
   width: 64px;
   height: 64px;
@@ -79,6 +85,7 @@ export const Bio = styled.Text.attrs({
 `;
 
 export const ProfileButton = styled(RectButton)`
+  flex: 1;
   margin-top: 10px;
   align-self: stretch;
   border-radius: 4px;
@@ -86,6 +93,17 @@ export const ProfileButton = styled(RectButton)`
   justify-content: center;
   align-items: center;
   height: 36px;
+`;
+export const DeleteUserButton = styled(RectButton)`
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+
+  background: #7159c1;
+  border-radius: 4px;
+  margin-left: 10px;
+  padding: 0 12px;
+  opacity: ${(props) => (props.loading ? 0.7 : 1)};
 `;
 
 export const ProfileButtonText = styled.Text`

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Keyboard, ActivityIndicator} from 'react-native';
+import {Keyboard, ActivityIndicator, ToastAndroid} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import api from '../../services/api';
 import {
   Container,
@@ -11,10 +11,12 @@ import {
   SubmitButton,
   List,
   User,
+  UserButtons,
   Avatar,
   Name,
   Bio,
   ProfileButton,
+  DeleteUserButton,
   ProfileButtonText,
 } from './styles';
 
@@ -57,25 +59,43 @@ export default class Main extends Component {
     }
   }
 
+  handleRemoveUser = (user) => {
+    const {users} = this.state;
+
+    this.setState({users: users.filter((u) => u !== user)});
+
+    ToastAndroid.show('Usuário removido com sucesso', ToastAndroid.SHORT);
+  };
+
   handleAddUser = async () => {
     const {users, newUser} = this.state;
 
     this.setState({loading: true});
 
-    const response = await api.get(`/users/${newUser}`);
+    await api
+      .get(`/users/${newUser}`)
+      .then((res) => {
+        console.log(res.data);
+        const data = {
+          name: res.data.name,
+          login: res.data.login,
+          bio: res.data.bio,
+          avatar: res.data.avatar_url,
+        };
 
-    const data = {
-      name: response.data.name,
-      login: response.data.login,
-      bio: response.data.bio,
-      avatar: response.data.avatar_url,
-    };
+        this.setState({
+          users: [...users, data],
+          newUser: '',
+        });
 
-    this.setState({
-      users: [...users, data],
-      newUser: '',
-      loading: false,
-    });
+        ToastAndroid.show('Usuário adicionado com sucesso', ToastAndroid.SHORT);
+      })
+      .catch((err) => {
+        ToastAndroid.show(err, ToastAndroid.SHORT);
+      })
+      .finally(() => {
+        this.setState({loading: false});
+      });
 
     /* Faz com que o teclado suma da tela */
     Keyboard.dismiss();
@@ -106,7 +126,7 @@ export default class Main extends Component {
             {loading ? (
               <ActivityIndicator color="#FFF" />
             ) : (
-              <Icon name="add" size={20} color="#fff" />
+              <Icon name="adduser" size={20} color="#fff" />
             )}
           </SubmitButton>
         </Form>
@@ -118,10 +138,14 @@ export default class Main extends Component {
               <Avatar source={{uri: item.avatar}} />
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
-
-              <ProfileButton onPress={() => this.handleNavigate(item)}>
-                <ProfileButtonText>Ver perfil</ProfileButtonText>
-              </ProfileButton>
+              <UserButtons>
+                <ProfileButton onPress={() => this.handleNavigate(item)}>
+                  <ProfileButtonText>Ver perfil</ProfileButtonText>
+                </ProfileButton>
+                <DeleteUserButton onPress={() => this.handleRemoveUser(item)}>
+                  <Icon name="deleteuser" size={20} color="#fff" />
+                </DeleteUserButton>
+              </UserButtons>
             </User>
           )}
         />
