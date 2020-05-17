@@ -70,32 +70,39 @@ export default class Main extends Component {
   handleAddUser = async () => {
     const {users, newUser} = this.state;
 
-    this.setState({loading: true});
+    if (newUser) {
+      this.setState({loading: true});
 
-    await api
-      .get(`/users/${newUser}`)
-      .then((res) => {
-        console.log(res.data);
-        const data = {
-          name: res.data.name,
-          login: res.data.login,
-          bio: res.data.bio,
-          avatar: res.data.avatar_url,
-        };
+      await api
+        .get(`/users/${newUser}`)
+        .then((res) => {
+          console.tron.log(res.data);
+          const data = {
+            name: res.data.name,
+            login: res.data.login,
+            bio: res.data.bio,
+            avatar: res.data.avatar_url,
+          };
 
-        this.setState({
-          users: [...users, data],
-          newUser: '',
+          this.setState({
+            users: [...users, data],
+            newUser: '',
+          });
+
+          ToastAndroid.show(
+            'Usuário adicionado com sucesso',
+            ToastAndroid.SHORT,
+          );
+        })
+        .catch((err) => {
+          ToastAndroid.show(err, ToastAndroid.SHORT);
+        })
+        .finally(() => {
+          this.setState({loading: false});
         });
-
-        ToastAndroid.show('Usuário adicionado com sucesso', ToastAndroid.SHORT);
-      })
-      .catch((err) => {
-        ToastAndroid.show(err, ToastAndroid.SHORT);
-      })
-      .finally(() => {
-        this.setState({loading: false});
-      });
+    } else {
+      ToastAndroid.show('Informe um nome de usuário', ToastAndroid.SHORT);
+    }
 
     /* Faz com que o teclado suma da tela */
     Keyboard.dismiss();
