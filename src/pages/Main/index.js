@@ -73,38 +73,39 @@ export default class Main extends Component {
     if (newUser) {
       this.setState({loading: true});
 
-      await api
-        .get(`/users/${newUser}`)
-        .then((res) => {
-          console.tron.log(res.data);
-          const data = {
-            name: res.data.name,
-            login: res.data.login,
-            bio: res.data.bio,
-            avatar: res.data.avatar_url,
-          };
+      try {
+        const res = await api.get(`/users/${newUser}`);
 
-          this.setState({
-            users: [...users, data],
-            newUser: '',
-          });
+        const userAlreadyExist = users.find((x) => x.login === res.data.login);
 
-          ToastAndroid.show(
-            'Usuário adicionado com sucesso',
-            ToastAndroid.SHORT,
-          );
-        })
-        .catch((err) => {
-          ToastAndroid.show(err, ToastAndroid.SHORT);
-        })
-        .finally(() => {
-          this.setState({loading: false});
+        if (userAlreadyExist) {
+          ToastAndroid.show('Usuário já cadastrado', ToastAndroid.SHORT);
+          Keyboard.dismiss();
+          return;
+        }
+
+        const data = {
+          name: res.data.name,
+          login: res.data.login,
+          bio: res.data.bio,
+          avatar: res.data.avatar_url,
+        };
+
+        this.setState({
+          users: [...users, data],
         });
+
+        ToastAndroid.show('Usuário adicionado com sucesso', ToastAndroid.SHORT);
+      } catch (err) {
+        if (err.response.status === 404)
+          ToastAndroid.show('Usuário não encontrado', ToastAndroid.SHORT);
+      } finally {
+        this.setState({loading: false, newUser: ''});
+      }
     } else {
       ToastAndroid.show('Informe um nome de usuário', ToastAndroid.SHORT);
     }
 
-    /* Faz com que o teclado suma da tela */
     Keyboard.dismiss();
   };
 
